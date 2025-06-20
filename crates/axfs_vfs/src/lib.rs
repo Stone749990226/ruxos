@@ -120,6 +120,11 @@ pub trait VfsNodeOps: Send + Sync {
         ax_err!(Unsupported, "set_attr method is unsupported")
     }
 
+    /// Get the inode number of the node.
+    fn get_inode(&self) -> Option<u64> {
+        None
+    }
+
     // file operations:
 
     /// Read data from the file at the given offset.
