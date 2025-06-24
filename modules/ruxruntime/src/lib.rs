@@ -251,10 +251,12 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
                 option_env!("RUX_PROTOCOL_9P").unwrap_or(""),
             ));
 
-            #[cfg(not(feature = "blkfs"))]
+            #[cfg(feature = "fusefs")]
             mount_points.push(ruxvda::init_vdafs(all_devices.block));
 
             ruxfs::prepare_commonfs(&mut mount_points);
+
+            info!("len = {}", mount_points.len());
 
             // setup and initialize rootfs
             ruxfs::init_filesystems(mount_points);
