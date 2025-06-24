@@ -14,7 +14,7 @@ use core::{
     str,
 };
 
-use ruxfs::{api::FileType, fops::lookup, FilePerm};
+use ruxfs::{api::FileType, fops::lookup, FilePerm, MountPoint};
 
 use axerrno::{LinuxError, LinuxResult};
 use axio::{Error, SeekFrom};
@@ -548,7 +548,7 @@ pub unsafe fn sys_getdents64(fd: c_int, dirp: *mut LinuxDirent64, count: ctypes:
 
             let name = entry.name_as_bytes();
             let name_len = name.len();
-            let entry_size = DIRENT64_FIXED_SIZE + name_len + 1;
+            let entry_size = (DIRENT64_FIXED_SIZE + name_len + 1 + 7) & !7; // align to 8 bytes
 
             // buf not big enough to hold the entry
             if written + entry_size > count {
@@ -563,7 +563,7 @@ pub unsafe fn sys_getdents64(fd: c_int, dirp: *mut LinuxDirent64, count: ctypes:
                 unsafe { &mut *(buf.as_mut_ptr().add(written) as *mut LinuxDirent64) };
             // set fixed-size fields
             dirent.d_ino = 1;
-            dirent.d_off = offset as i64;
+            dirent.d_off = (offset + 1) as i64;
             dirent.d_reclen = entry_size as u16;
             dirent.d_type = entry.entry_type() as u8;
             // set file name
@@ -698,7 +698,10 @@ pub fn sys_mount(
             .clone();
         let vfsops = ruxfuse::fuse::fusefs();
         info!("mounting filesystem at {}", target);
-        dir.mount(target, vfsops)?;
+        dir.mount(MountPoint {
+            path: target,
+            fs: vfsops,
+        })?;
         Ok(0)
     })
 }

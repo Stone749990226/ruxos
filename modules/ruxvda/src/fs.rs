@@ -16,8 +16,8 @@
 use alloc::vec;
 use alloc::{sync::Arc, sync::Weak};
 use axfs_vfs::{
-    AbsPath, RelPath, VfsError, VfsNodeAttr, VfsNodeOps, VfsNodePerm, VfsNodeRef, VfsNodeType,
-    VfsOps, VfsResult,
+    RelPath, VfsError, VfsNodeAttr, VfsNodeOps, VfsNodePerm, VfsNodeRef, VfsNodeType, VfsOps,
+    VfsResult,
 };
 use log::*;
 use ruxdriver::prelude::BlockDriverOps;
@@ -44,13 +44,8 @@ impl VdaFileSystem {
 }
 
 impl VfsOps for VdaFileSystem {
-    fn mount(&self, path: &AbsPath, mount_point: VfsNodeRef) -> VfsResult {
-        debug!("Mount VDA filesystem, path: {:?}", path);
-        if let Some(parent) = mount_point.parent() {
-            self.root.set_parent(Some(self.parent.call_once(|| parent)));
-        } else {
-            self.root.set_parent(None);
-        }
+    fn mount(&self, parent: VfsNodeRef) -> VfsResult {
+        self.root.set_parent(Some(self.parent.call_once(|| parent)));
         Ok(())
     }
 

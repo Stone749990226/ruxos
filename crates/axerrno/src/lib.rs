@@ -329,7 +329,7 @@ mod tests {
     #[test]
     fn test_try_from() {
         let max_code = core::mem::variant_count::<AxError>() as i32;
-        assert_eq!(max_code, 24);
+        assert_eq!(max_code, 25);
         assert_eq!(max_code, AxError::NoTty.code());
 
         assert_eq!(AxError::AddrInUse.code(), 1);

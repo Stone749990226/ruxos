@@ -19,7 +19,7 @@ use log::*;
 use ruxtask::{current, WaitQueue};
 use spinlock::SpinNoIrq;
 
-use axfs_vfs::{AbsPath, RelPath, VfsDirEntry, VfsError, VfsResult};
+use axfs_vfs::{RelPath, VfsDirEntry, VfsError, VfsResult};
 use axfs_vfs::{VfsNodeAttr, VfsNodeOps, VfsNodePerm, VfsNodeRef, VfsNodeType, VfsOps};
 use ruxfs::devfuse::{FUSEFLAG, FUSE_VEC};
 use ruxfs::fuse_st::{
@@ -57,13 +57,8 @@ impl FuseFS {
 }
 
 impl VfsOps for FuseFS {
-    fn mount(&self, _path: &AbsPath, mount_point: VfsNodeRef) -> VfsResult {
-        debug!("fusefs mount...");
-        if let Some(parent) = mount_point.parent() {
-            self.root.set_parent(Some(self.parent.call_once(|| parent)));
-        } else {
-            self.root.set_parent(None);
-        }
+    fn mount(&self, parent: VfsNodeRef) -> VfsResult {
+        self.root.set_parent(Some(self.parent.call_once(|| parent)));
         Ok(())
     }
 

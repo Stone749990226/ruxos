@@ -259,7 +259,8 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
             info!("len = {}", mount_points.len());
 
             // setup and initialize rootfs
-            ruxfs::init_filesystems(mount_points);
+            ruxtask::fs::init_rootfs(mount_points);
+            // ruxfs::init_filesystems(mount_points);
         }
 
         #[cfg(feature = "display")]

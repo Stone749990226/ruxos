@@ -196,8 +196,3 @@ pub fn prepare_commonfs(mount_points: &mut Vec<self::root::MountPoint>) {
         mount_points.push(mount_point);
     }
 }
-
-/// Initializes root filesystems.
-pub fn init_filesystems(mount_points: Vec<self::root::MountPoint>) {
-    self::fops::init_rootfs(mount_points);
-}

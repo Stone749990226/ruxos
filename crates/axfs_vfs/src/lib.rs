@@ -74,7 +74,7 @@ pub type VfsResult<T = ()> = AxResult<T>;
 /// Filesystem operations.
 pub trait VfsOps: Send + Sync {
     /// Do something when the filesystem is mounted.
-    fn mount(&self, _path: &AbsPath, _mount_point: VfsNodeRef) -> VfsResult {
+    fn mount(&self, _parent: VfsNodeRef) -> VfsResult {
         Ok(())
     }
 
